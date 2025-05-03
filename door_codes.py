@@ -1,6 +1,7 @@
 from secrets import randbelow
 from datetime import datetime
 from csv import reader
+import pyperclip
 
 def get_name():
     # Defines a while loop that breaks once the user provides a valid first name
@@ -15,7 +16,7 @@ def get_name():
 
     # Defines a while loop that breaks once the user provides a valid last name
     while True:
-        # Prompts user for first name of guest and saves it in a name variable
+        # Prompts user for last name of guest and saves it in a name variable
         last_name = input("Last name: ")
         if not last_name.isalpha():
             print ("Invalid entry. Alphabetical characters only.")
@@ -67,22 +68,62 @@ def ensure_unique(code):
     with open('door-codes.csv') as f:
         for num, row in enumerate(reader(f)):
             if code in row[1]:
-                get_door_code()
                 print(
                     "Collision! That door code was already issued! "
                     "Generating a new code. See {} {}.".format(num, row)
                 )
+                get_door_code()
+            else:
+                break
 
-# Appends the guest name, code, and arrival date to local CSV file
-with open('door-codes.csv', 'a') as f:
-    guest = get_name()
-    door_code = get_door_code()
-    ensure_unique(str(door_code))
-    arrival = get_date()
-    f.write("{},{},{}\n".format(guest, door_code, arrival))
+guest = get_name()
+door_code = get_door_code()
+ensure_unique(str(door_code))
+arrival = get_date()
 
-# Prints summary message
-print(
-    "Added guest {}, using code {}, arriving {}".
-    format(guest, door_code, arrival)
-)
+# Appends the guest name, code, and arrival date in local CSV file
+def store_code():
+    try:
+        with open('door-codes.csv', 'a') as f:
+            f.write("{},{},{}\n".format(guest, door_code, arrival))
+            # Prints summary message
+            print(
+                "Added guest {}, using code {}, arriving {}".
+                format(guest, door_code, arrival)
+            )
+    except FileNotFoundError:
+        print(f"Error: File not found: {file_path}")
+        return
+
+store_code()
+
+def gen_long_msg():
+    try:
+        with open('welcome-long.txt', 'r') as f:
+            welcome_long = f.read()
+            welcome_long = welcome_long.replace('GUEST_NAME', guest)
+            welcome_long = welcome_long.replace('DOOR_CODE', str(door_code))
+            pyperclip.copy(welcome_long)
+            print("Copied long message to clipboard! I'll wait for you to paste it.")
+            input("Press Enter when you're ready for the short message.")
+    except FileNotFoundError:
+        print(f"Error: File not found: {file_path}")
+        return
+
+def gen_short_msg():
+    try:
+        with open('welcome-short.txt', 'r') as f:
+            welcome_short = f.read()
+            welcome_short = welcome_short.replace('DOOR_CODE', str(door_code))
+            pyperclip.copy(welcome_short)
+            print("Copied short message to clipboard! I'll wait for you to paste it.")
+            input("Press Enter when you're done.")
+    except FileNotFoundError:
+        print(f"Error: File not found: {file_path}")
+        return
+
+gen_long_msg()
+gen_short_msg()
+
+print("Thank you for using this script. Have a great day.")
+
