@@ -27,7 +27,7 @@ def get_name():
 
     # Concatenates the first and last names, adding space between
     full_name = first_name + " " + last_name
-    return full_name
+    return full_name, first_name
 
 def get_date():
     # Defines a while loop that breaks once the user provides a correct date
@@ -77,26 +77,25 @@ def ensure_unique(code):
             else:
                 break
 
-guest = get_name()
+guest_long, guest_short = get_name()
+print("long name {}, short name {}".format(guest_long, guest_short))
 door_code = get_door_code()
 ensure_unique(str(door_code))
 arrival = get_date()
 
-# Appends the guest name, code, and arrival date in local CSV file
+# Appends the guest's full name, code, and arrival date in local CSV file
 def store_code():
     try:
         with open('door-codes.csv', 'a') as f:
-            f.write("{},{},{}\n".format(guest, door_code, arrival))
+            f.write("{},{},{}\n".format(guest_long, door_code, arrival))
             # Prints summary message
             print(
-                "Added guest {}, using code {}, arriving {}".
-                format(guest, door_code, arrival)
+                "Added guest {} to door_codes.csv: using code {}, arriving {}".
+                format(guest_long, door_code, arrival)
             )
-    except FileNotFoundError:
-        print(f"Error: File not found: {file_path}")
-        return
-
-store_code()
+    except FileNotFoundError as e:
+        print(f"Error! Couldn't find the {e.filename} file. Please fix this, then rerun the script")
+        exit(1)
 
 def get_dropoff():
     # Defines a while loop that asks user if guest requested luggage drop off
@@ -109,16 +108,32 @@ def get_dropoff():
         else:
             print("Invalid input. Please enter 'Y' or 'N'.")
 
+def get_baby():
+    # Defines a while loop that asks user if guest is bringing infant
+    while True:
+        baby = input('Are they bringing an infant? Y or N: ').lower().strip()
+        if baby == 'y':
+            return True
+        elif baby == 'n':
+            return False
+        else:
+            print("Invalid input. Please enter 'Y' or 'N'.")
+
 def gen_long_msg():
     dropoff = get_dropoff()
-    if dropoff:
+    baby = get_baby()
+    if dropoff and not baby:
         file_name = 'welcome-dropoff.txt'
+    elif baby and not dropoff:
+        file_name = 'welcome-baby.txt'
+    elif dropoff and baby:
+        file_name = 'welcome-baby-dropoff.txt'
     else:
         file_name = 'welcome-regular.txt'
     try:
         with open(file_name, 'r') as f:
             welcome_long = f.read()
-            welcome_long = welcome_long.replace('GUEST_NAME', guest)
+            welcome_long = welcome_long.replace('GUEST_NAME', guest_short)
             welcome_long = welcome_long.replace('DOOR_CODE', str(door_code))
             pyperclip.copy(welcome_long)
             print("Copied long message to clipboard! I'll wait for you to paste it.")
@@ -141,6 +156,7 @@ def gen_short_msg():
 
 gen_long_msg()
 gen_short_msg()
+store_code()
 
 print("Thank you for using this script. Have a great day.")
 
