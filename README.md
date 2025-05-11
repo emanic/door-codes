@@ -13,7 +13,8 @@ It stores the code along with the name of the guest and the date of their
 arrival in a local CSV file. 
 
 It then inserts the name of the guest and their code into a welcome 
-message which it pastes to your clipboard.
+message which it pastes to your clipboard. It supports several variations
+for welcome messages.
 
 ## Getting started
 
@@ -36,6 +37,9 @@ to interact with the local clipboard.
 1. Create the following local files:
 
    - **door-codes.csv**: can be blank
-   - **welcome-long.txt**: long message containing strings GUEST_NAME and DOOR_CODE
+   - **welcome-regular.txt**: long message for regular check in containing strings 
+     GUEST_NAME and DOOR_CODE
+   - **welcome-dropoff.txt**: long message for guest wanting luggage dropoff containing 
+     strings GUEST_NAME and DOOR_CODE
    - **welcome-short.txt**: short message containing string DOOR_CODE
 

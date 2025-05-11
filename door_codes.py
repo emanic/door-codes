@@ -1,6 +1,7 @@
 from secrets import randbelow
 from datetime import datetime
 from csv import reader
+from sys import exit
 import pyperclip
 
 def get_name():
@@ -97,18 +98,34 @@ def store_code():
 
 store_code()
 
+def get_dropoff():
+    # Defines a while loop that asks user if guest requested luggage drop off
+    while True:
+        dropoff = input('Did they request luggage drop off? Y or N: ').lower().strip()
+        if dropoff == 'y':
+            return True
+        elif dropoff == 'n':
+            return False
+        else:
+            print("Invalid input. Please enter 'Y' or 'N'.")
+
 def gen_long_msg():
+    dropoff = get_dropoff()
+    if dropoff:
+        file_name = 'welcome-dropoff.txt'
+    else:
+        file_name = 'welcome-regular.txt'
     try:
-        with open('welcome-long.txt', 'r') as f:
+        with open(file_name, 'r') as f:
             welcome_long = f.read()
             welcome_long = welcome_long.replace('GUEST_NAME', guest)
             welcome_long = welcome_long.replace('DOOR_CODE', str(door_code))
             pyperclip.copy(welcome_long)
             print("Copied long message to clipboard! I'll wait for you to paste it.")
             input("Press Enter when you're ready for the short message.")
-    except FileNotFoundError:
-        print(f"Error: File not found: {file_path}")
-        return
+    except FileNotFoundError as e:
+        print(f"Error! Couldn't find the {e.filename} file. Please fix this, then rerun the script.")
+        exit(1)
 
 def gen_short_msg():
     try:
@@ -118,9 +135,9 @@ def gen_short_msg():
             pyperclip.copy(welcome_short)
             print("Copied short message to clipboard! I'll wait for you to paste it.")
             input("Press Enter when you're done.")
-    except FileNotFoundError:
-        print(f"Error: File not found: {file_path}")
-        return
+    except FileNotFoundError as e:
+        print(f"Error! Couldn't find the {e.filename} file. Please fix this, then rerun the script")
+        exit(1)
 
 gen_long_msg()
 gen_short_msg()
