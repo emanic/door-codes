@@ -9,8 +9,8 @@ def get_name():
     while True:
         # Prompts user for first name of guest and saves it in a name variable
         first_name = input("Who's coming? First name: ")
-        if not all(x.isalpha() or x.isspace() for x in first_name):
-            print ("Invalid entry. Alphabetical characters and spaces only.")
+        if not all(x.isalpha() or x.isspace() for x in first_name) or first_name == "":
+            print ("Invalid or empty entry. Alphabetical characters and spaces only.")
         else:
             first_name = first_name.title().rstrip()
             break
@@ -19,7 +19,7 @@ def get_name():
     while True:
         # Prompts user for last name of guest and saves it in a name variable
         last_name = input("Last name: ")
-        if not all(x.isalpha() or x.isspace() for x in last_name):
+        if not all(x.isalpha() or x.isspace() for x in last_name) or first_name == "":
             print ("Invalid entry. Alphabetical characters and spaces only.")
         else:
             last_name = last_name.title().rstrip()
