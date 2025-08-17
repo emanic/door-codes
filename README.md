@@ -5,6 +5,9 @@
 Python script that automates the generation and storage of random, 
 eight-digit codes for smart locks. 
 
+It checks for repeat guests and tracks the number of stays. 
+It reuses the door code of a repeat guest.
+
 It ensures that the code does not start with zero as many locks cannot
 accept such values. It also checks that the code has not already been
 used. If it has, it generates a new code.
@@ -40,19 +43,19 @@ to interact with the local clipboard.
 
 1. Create the following local files:
 
-   - **door-codes.csv**: can be blank
+   - **door_codes.csv**: can be blank
 
-   - **welcome-regular.txt**: long message for regular check in containing strings 
+   - **welcome_regular.txt**: long message for regular check in containing strings 
      GUEST_NAME and DOOR_CODE
 
-   - **welcome-dropoff.txt**: long message for guest wanting luggage dropoff containing 
+   - **welcome_dropoff.txt**: long message for guest wanting luggage dropoff containing 
      strings GUEST_NAME and DOOR_CODE
 
-   - **welcome-baby.txt**: long message for guest bringing infant containing strings 
+   - **welcome_baby.txt**: long message for guest bringing infant containing strings 
      GUEST_NAME and DOOR_CODE
 
-   - **welcome-baby-dropoff.txt**: long message for guest dropping off lugagge _and_ bringing 
+   - **welcome_baby_dropoff.txt**: long message for guest dropping off lugagge _and_ bringing 
      infant containing strings GUEST_NAME and DOOR_CODE
 
-   - **welcome-short.txt**: short message containing string DOOR_CODE
+   - **welcome_short.txt**: short message containing string DOOR_CODE
 
