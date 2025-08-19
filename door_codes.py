@@ -94,7 +94,6 @@ def ensure_unique(code):
     # Check if door code already exists and regenerate if needed.
     with open('door_codes.csv') as f:
         existing_codes = [row[1] for row in reader(f)]
-        print(existing_codes)
     
     # Keep generating until we get a unique code
     while str(code) in existing_codes:
