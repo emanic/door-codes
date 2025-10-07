@@ -1,9 +1,19 @@
 from secrets import randbelow
 from datetime import datetime
+from jinja2 import Environment, FileSystemLoader
 from csv import reader, writer
 from sys import exit
 import pyperclip
 import os
+import re
+
+env = Environment(
+    loader=FileSystemLoader('.')
+)
+
+template_long = env.get_template("welcome_long.txt")
+template_short = env.get_template("welcome_short.txt")
+print(template_long, template_short)
 
 def get_name():
     # Defines a while loop that breaks once the user provides a valid first name
@@ -182,22 +192,27 @@ def get_baby():
 def gen_long_msg():
     dropoff = get_dropoff()
     baby = get_baby()
-    if dropoff and not baby:
-        file_name = 'welcome_dropoff.txt'
-    elif baby and not dropoff:
-        file_name = 'welcome_baby.txt'
-    elif dropoff and baby:
-        file_name = 'welcome_baby_dropoff.txt'
-    else:
-        file_name = 'welcome_regular.txt'
+    context = {
+        "guest_name": guest_short,
+        "door_code": door_code,
+        "repeat": repeat,
+        "baby": baby,
+        "dropoff": dropoff
+    }
+
     try:
-        with open(file_name, 'r') as f:
-            welcome_long = f.read()
-            welcome_long = welcome_long.replace('GUEST_NAME', guest_short)
-            welcome_long = welcome_long.replace('DOOR_CODE', str(door_code))
-            pyperclip.copy(welcome_long)
-            print("Copied long message to clipboard! I'll wait for you to paste it.")
-            input("Press Enter when you're ready for the short message.")
+        welcome_long = template_long.render(
+            guest_name=guest_short,
+            door_code=door_code,
+            repeat=repeat,
+            baby=baby,
+            dropoff=dropoff
+        )
+        welcome_long = re.sub(r'\n\n+', '\n\n', welcome_long)
+        pyperclip.copy(welcome_long)
+        print("Copied long message to clipboard! I'll wait for you to paste it.")
+        input("Press Enter when you're ready for the short message.")
+
     except FileNotFoundError as e:
         print(
             f"Error! Couldn't find the {e.filename} file. Please fix this, "
@@ -206,13 +221,17 @@ def gen_long_msg():
         exit(1)
 
 def gen_short_msg():
+    context = {
+        "door_code": door_code
+    }
+
     try:
-        with open('welcome_short.txt', 'r') as f:
-            welcome_short = f.read()
-            welcome_short = welcome_short.replace('DOOR_CODE', str(door_code))
-            pyperclip.copy(welcome_short)
-            print("Copied short message to clipboard! I'll wait for you to paste it.")
-            input("Press Enter when you're done.")
+        welcome_short = template_short.render(
+            door_code=door_code
+        )
+        pyperclip.copy(welcome_short)
+        print("Copied short message to clipboard! I'll wait for you to paste it.")
+        input("Press Enter when you're done.")
     except FileNotFoundError as e:
         print(
             f"Error! Couldn't find the {e.filename} file. Please fix this, "
